@@ -1,163 +1,136 @@
 # BattleBox Plugin Development Plan
 
-## 1. Project Structure
+## 1. Core Structure
 - Main plugin class
 - Configuration management
-- Arena system
-- Team system
-- Game management
-- Kit system
-- Commands
-- Events
-- AI Integration
-- Utilities
+- Database setup (for stats and arena data)
+- Event handling system
 
-## 2. Core Components
-
-### 2.1 Main Plugin Class (BattleBoxPlugin)
-- Plugin initialization
-- Command registration
-- Event registration
-- Static plugin instance
-- Configuration loading
-
-### 2.2 Configuration System
-- Arena configurations
-- Team settings
-- Game settings
-- Messages
-- Kit configurations
-- YAML-based configuration
-
-### 2.3 Arena System
+## 2. Arena System
+### 2.1 Arena Management
 - Arena creation/deletion
-- Arena boundaries
-- Wool center definition
-- Spawn points
-- State management
-- Arena validation
+- Arena configuration
+  - Spawn points
+  - Team locations
+  - Center wool area
+  - Boundaries
+- Arena state management
+  - WAITING
+  - STARTING
+  - IN_GAME
+  - ENDING
 
-### 2.4 Team System
-- Team creation
-- Team management
-- Team colors
-- Team scoring
-- Team balancing
-
-### 2.5 Game Management
-- Game states (WAITING, STARTING, ACTIVE, ENDING)
-- Round management
-- Timer system
-- Point system
+### 2.2 Game Mechanics
+- Round timer (3 minutes)
 - Win conditions
-- Game logic
+  - Center wool completion
+  - Team elimination
+- Point system
+  - Configurable points per kill
+  - Points for winning
+  - Custom point settings
 
-### 2.6 Kit System
-- Custom kits
+## 3. Team System
+### 3.1 Team Management
+- Team creation
+- Team balancing
+- Team colors
+- Team spawn points
+
+### 3.2 Player Management
+- Player data tracking
+- Statistics
+- Team assignments
+
+## 4. Kit System
+### 4.1 Kit Management
+- Default kits
+- Custom kit support
+- Kit selection interface
+- Kit persistence
+
+### 4.2 Equipment
+- Armor sets
+- Weapons
+- Tools
+- Special items
+
+## 5. Game Flow
+### 5.1 Pre-game
+- Lobby system
+- Team selection
 - Kit selection
-- Kit application
-- Kit permissions
+- Countdown
 
-## 3. Features
+### 5.2 In-game
+- Round start
+- Player combat
+- Objective tracking
+- Score updates
 
-### 3.1 Core Game Mechanics
-- 3-minute round timer
-- Wool center placement
-- Team vs Team combat
-- Point system based on MCC rules
-- Round completion detection
+### 5.3 Post-game
+- Winner determination
+- Rewards distribution
+- Statistics update
+- Reset mechanism
 
-### 3.2 Commands
-- Arena management commands
-- Game control commands
-- Team management commands
-- Kit management commands
-- Admin commands
-- Player commands
+## 6. Commands
+### 6.1 Player Commands
+- Join game
+- Leave game
+- Select team
+- Select kit
+- View stats
 
-### 3.3 Events
-- Player join/leave handling
-- Combat events
-- Wool placement events
-- Game state events
-- Team events
+### 6.2 Admin Commands
+- Create arena
+- Delete arena
+- Set spawn points
+- Configure settings
+- Force start/stop
+- Pause game
 
-### 3.4 AI Integration
-- AI behavior implementation
-- Decision making
-- Path finding
-- Combat strategies
+## 7. Configuration
+### 7.1 Main Config
+- Arena settings
+- Team settings
+- Game rules
+- Messages
+- Rewards
 
-## 4. Implementation Order
+### 7.2 Language System
+- Customizable messages
+- Multi-language support
 
-1. **Phase 1: Basic Setup**
-   - Project structure
-   - Main plugin class
-   - Basic configuration
-   - Command framework
-   - Event system setup
+## 8. API
+- Event system for other plugins
+- Arena management API
+- Team management API
+- Game state API
 
-2. **Phase 2: Core Systems**
-   - Arena management
-   - Team system
-   - Game state management
-   - Basic game loop
+## 9. Extra Features
+- Spectator mode
+- Party system
+- Tournament mode
+- Leaderboards
+- Achievement system
 
-3. **Phase 3: Game Mechanics**
-   - Wool placement mechanics
-   - Combat system
-   - Point system
-   - Win conditions
+## Implementation Order
+1. Basic plugin structure
+2. Configuration system
+3. Arena management
+4. Team system
+5. Game mechanics
+6. Kit system
+7. Commands
+8. Event handling
+9. Extra features
+10. API development
 
-4. **Phase 4: Additional Features**
-   - Kit system
-   - Admin commands
-   - Spectator mode
-   - Game statistics
-
-5. **Phase 5: AI Integration**
-   - AI behavior implementation
-   - Strategy system
-   - Performance optimization
-
-6. **Phase 6: Polish**
-   - Testing
-   - Bug fixes
-   - Performance optimization
-   - Documentation
-
-## 5. Technical Considerations
-
-### 5.1 Code Structure
-- Use Lombok for boilerplate reduction
+## Technical Considerations
+- Use Lombok for clean code
 - Implement proper error handling
 - Follow naming conventions
-- Use final where appropriate
-- Implement null safety checks
-- Use builder pattern for complex objects
-
-### 5.2 Performance
-- Efficient data structures
-- Proper memory management
-- Async operations where possible
-- Cache frequently used data
-
-### 5.3 Security
-- Permission checks
-- Input validation
-- Anti-cheat considerations
-- Command restrictions
-
-## 6. Testing Strategy
-- Unit tests for core components
-- Integration tests for game mechanics
-- Performance testing
-- Player testing sessions
-- Bug tracking and fixing
-
-## 7. Documentation
-- Code documentation
-- API documentation
-- User guide
-- Configuration guide
-- Command documentation
+- Use builder pattern where appropriate
+- Implement proper documentation
+- Create comprehensive test cases

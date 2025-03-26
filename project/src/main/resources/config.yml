@@ -1,67 +1,56 @@
-# BattleBox Configuration
-
-# Game Settings
-game:
-  round-time: 180 # Time in seconds (3 minutes)
+settings:
+  round-duration: 180
   min-players-per-team: 1
   max-players-per-team: 4
-  countdown-time: 30 # Time in seconds before game starts
+  countdown-duration: 30
+  points:
+    kill: 50
+    win: 100
+    participation: 10
 
-# Arena Settings
-arenas:
-  default:
-    name: "Default Arena"
-    world: "world"
-    enabled: true
-    bounds:
-      min: {x: 0, y: 0, z: 0}
-      max: {x: 0, y: 0, z: 0}
-    wool-center:
-      location: {x: 0, y: 0, z: 0}
-      radius: 3
-    spawns:
-      red-team: {x: 0, y: 0, z: 0, yaw: 0, pitch: 0}
-      blue-team: {x: 0, y: 0, z: 0, yaw: 0, pitch: 0}
+arena:
+  default-block: WOOL
+  center-size: 3
+  build-height: 5
 
-# Team Settings
 teams:
   red:
     name: "Red Team"
     color: RED
-    prefix: "&c"
+    wool-color: RED
   blue:
     name: "Blue Team"
     color: BLUE
-    prefix: "&9"
+    wool-color: BLUE
 
-# Kit Settings
 kits:
   default:
-    name: "Default Kit"
-    items:
-      - material: IRON_SWORD
-        slot: 0
-      - material: BOW
-        slot: 1
-      - material: IRON_AXE
-        slot: 2
-      - material: WHITE_WOOL
-        slot: 3
-        amount: 64
-      - material: ARROW
-        slot: 8
-        amount: 32
     armor:
       helmet: IRON_HELMET
       chestplate: IRON_CHESTPLATE
       leggings: IRON_LEGGINGS
       boots: IRON_BOOTS
+    items:
+      - material: IRON_SWORD
+        slot: 0
+      - material: BOW
+        slot: 1
+      - material: WOODEN_AXE
+        slot: 2
+      - material: ARROW
+        slot: 8
+        amount: 8
 
-# Messages
 messages:
-  prefix: "&8[&bBattleBox&8] &7"
-  game-start: "&aThe game has started!"
-  game-end: "&eThe game has ended!"
-  team-win: "&6{team} &ehas won the round!"
-  round-start: "&aRound {round} is starting!"
-  round-end: "&eRound {round} has ended!"
+  prefix: "&8[&6BattleBox&8] "
+  game:
+    start: "&aGame starting in %time% seconds!"
+    started: "&aThe game has started!"
+    ended: "&eGame Over! %winner% wins!"
+    tie: "&eGame Over! It's a tie!"
+  team:
+    joined: "&aYou joined %team%!"
+    full: "&cThis team is full!"
+  arena:
+    created: "&aArena %name% has been created!"
+    deleted: "&cArena %name% has been deleted!"
