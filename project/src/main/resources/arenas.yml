@@ -1,0 +1,16 @@
+# BattleBox Arenas Configuration
+# This file stores all arena data
+
+arenas:
+  # Arenas will be stored here automatically
+  # Format:
+  # arena_id:
+  #   name: Arena Name
+  #   world: world_name
+  #   centerLocation: {x: 0, y: 0, z: 0}
+  #   cornerA: {x: 0, y: 0, z: 0}
+  #   cornerB: {x: 0, y: 0, z: 0}
+  #   spectatorSpawn: {x: 0, y: 0, z: 0}
+  #   minPlayers: 2
+  #   maxPlayers: 16
+  #   centerSize: 3

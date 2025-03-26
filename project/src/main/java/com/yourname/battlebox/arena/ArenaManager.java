@@ -3,100 +3,115 @@ package com.yourname.battlebox.arena;
 import com.yourname.battlebox.BattleBox;
 import lombok.Getter;
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.util.BoundingBox;
+import org.bukkit.World;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 
-import java.util.Collection;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-@Getter
-public final class ArenaManager {
-
+public class ArenaManager {
     private final BattleBox plugin;
-    private final Map<UUID, Arena> arenas;
+    @Getter
+    private final Map<String, Arena> arenas;
+    private final File arenasFile;
+    private FileConfiguration arenasConfig;
 
-    public ArenaManager(final BattleBox plugin) {
+    public ArenaManager(BattleBox plugin) {
         this.plugin = plugin;
         this.arenas = new HashMap<>();
+        this.arenasFile = new File(plugin.getDataFolder(), "arenas.yml");
+        this.loadArenas();
     }
 
-    public Optional<Arena> getArena(final UUID arenaId) {
-        return Optional.ofNullable(this.arenas.get(arenaId));
-    }
-
-    public Collection<Arena> getAvailableArenas() {
-        return this.arenas.values().stream()
-                .filter(arena -> arena.isSetup() && 
-                               arena.isEnabled() && 
-                               arena.getState() == ArenaState.READY)
-                .collect(Collectors.toList());
-    }
-
-    public void createArena(final String name, final Location center, final Location corner1, final Location corner2) {
-        if (!center.getWorld().equals(corner1.getWorld()) || !center.getWorld().equals(corner2.getWorld())) {
-            throw new IllegalArgumentException("All locations must be in the same world");
+    public Optional<Arena> createArena(String name, World world) {
+        if (arenas.values().stream().anyMatch(arena -> arena.getName().equalsIgnoreCase(name))) {
+            return Optional.empty();
         }
 
-        final Arena arena = Arena.builder()
-                .name(name)
-                .id(UUID.randomUUID())
-                .world(center.getWorld())
-                .center(center)
-                .teamSpawns(new HashMap<>())
-                .buildHeight(this.plugin.getConfigManager().getConfig().getInt("arena.build-height", 5))
-                .centerBlockType(Material.valueOf(this.plugin.getConfigManager().getConfig().getString("arena.default-block", "WOOL")))
-                .centerSize(this.plugin.getConfigManager().getConfig().getInt("arena.center-size", 3))
-                .bounds(new BoundingBox(
-                    Math.min(corner1.getX(), corner2.getX()),
-                    Math.min(corner1.getY(), corner2.getY()),
-                    Math.min(corner1.getZ(), corner2.getZ()),
-                    Math.max(corner1.getX(), corner2.getX()),
-                    Math.max(corner1.getY(), corner2.getY()),
-                    Math.max(corner1.getZ(), corner2.getZ())
-                ))
-                .enabled(false)
-                .state(ArenaState.SETUP)
-                .build();
-
-        this.arenas.put(arena.getId(), arena);
+        Arena arena = new Arena(name, world);
+        arenas.put(arena.getId(), arena);
+        saveArenas();
+        return Optional.of(arena);
     }
 
-    public void deleteArena(final UUID arenaId) {
-        final Arena arena = this.arenas.get(arenaId);
-        if (arena != null && arena.getState() != ArenaState.IN_USE) {
-            this.arenas.remove(arenaId);
-        }
-    }
-
-    public void setArenaState(final UUID arenaId, final ArenaState state) {
-        this.getArena(arenaId).ifPresent(arena -> arena.setState(state));
-    }
-
-    public boolean setTeamSpawn(final UUID arenaId, final String teamName, final Location location) {
-        final Optional<Arena> arenaOpt = this.getArena(arenaId);
-        if (arenaOpt.isPresent() && arenaOpt.get().isInArena(location)) {
-            Arena arena = arenaOpt.get();
-            arena.getTeamSpawns().put(teamName, location);
+    public boolean deleteArena(String id) {
+        Arena arena = arenas.get(id);
+        if (arena != null && arena.getState() != ArenaState.IN_GAME) {
+            arenas.remove(id);
+            saveArenas();
             return true;
         }
         return false;
     }
 
-    public boolean setSpectatorSpawn(final UUID arenaId, final Location location) {
-        return this.getArena(arenaId)
-                .filter(arena -> arena.isInArena(location))
-                .map(arena -> {
-                    try {
-                        Arena.class.getDeclaredField("spectatorSpawn").set(arena, location);
-                        return true;
-                    } catch (Exception e) {
-                        return false;
-                    }
-                })
-                .orElse(false);
+    public Optional<Arena> getArena(String id) {
+        return Optional.ofNullable(arenas.get(id));
+    }
+
+    public Optional<Arena> getArenaByName(String name) {
+        return arenas.values().stream()
+            .filter(arena -> arena.getName().equalsIgnoreCase(name))
+            .findFirst();
+    }
+
+    public Set<Arena> getAvailableArenas() {
+        return arenas.values().stream()
+            .filter(arena -> arena.getState() == ArenaState.WAITING)
+            .collect(Collectors.toSet());
+    }
+
+    public boolean setArenaCorners(String id, Location cornerA, Location cornerB) {
+        Optional<Arena> optionalArena = getArena(id);
+        if (!optionalArena.isPresent()) return false;
+
+        Arena arena = optionalArena.get();
+        if (cornerA.getWorld() != cornerB.getWorld() || 
+            cornerA.getWorld() != arena.getWorld()) {
+            return false;
+        }
+
+        arena.setCornerA(cornerA);
+        arena.setCornerB(cornerB);
+        saveArenas();
+        return true;
+    }
+
+    public void loadArenas() {
+        if (!arenasFile.exists()) {
+            plugin.saveResource("arenas.yml", false);
+        }
+
+        arenasConfig = YamlConfiguration.loadConfiguration(arenasFile);
+        
+        if (arenasConfig.contains("arenas")) {
+            arenasConfig.getConfigurationSection("arenas").getKeys(false).forEach(key -> {
+                Arena arena = (Arena) arenasConfig.get("arenas." + key);
+                if (arena != null) {
+                    arenas.put(arena.getId(), arena);
+                }
+            });
+        }
+    }
+
+    public void saveArenas() {
+        arenasConfig = new YamlConfiguration();
+        arenas.forEach((id, arena) -> arenasConfig.set("arenas." + id, arena));
+        
+        try {
+            arenasConfig.save(arenasFile);
+        } catch (IOException e) {
+            plugin.getLogger().severe("Could not save arenas to " + arenasFile);
+            e.printStackTrace();
+        }
+    }
+
+    public void resetArena(String id) {
+        getArena(id).ifPresent(Arena::reset);
     }
 }

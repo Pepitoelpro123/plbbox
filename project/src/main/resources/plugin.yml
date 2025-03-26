@@ -1,23 +1,11 @@
 name: BattleBox
-version: '${project.version}'
+version: '1.0-SNAPSHOT'
 main: com.yourname.battlebox.BattleBox
 api-version: '1.21'
 authors: [YourName]
 description: A BattleBox minigame plugin inspired by MCC
 commands:
   battlebox:
-    description: Main command for BattleBox
+    description: Main command for BattleBox plugin
     aliases: [bb]
-    permission: battlebox.command
-permissions:
-  battlebox.*:
-    description: Gives access to all BattleBox commands
-    children:
-      battlebox.admin: true
-      battlebox.player: true
-  battlebox.admin:
-    description: Gives access to admin commands
-    default: op
-  battlebox.player:
-    description: Gives access to player commands
-    default: true
+    usage: /<command> [subcommand]

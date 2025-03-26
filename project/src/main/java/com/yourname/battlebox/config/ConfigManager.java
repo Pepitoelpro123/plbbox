@@ -3,48 +3,46 @@ package com.yourname.battlebox.config;
 import com.yourname.battlebox.BattleBox;
 import lombok.Getter;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 
-@Getter
-public final class ConfigManager {
+import java.io.File;
+import java.io.IOException;
 
+public class ConfigManager {
+    
     private final BattleBox plugin;
-    private final FileConfiguration config;
+    @Getter
+    private FileConfiguration config;
+    private File configFile;
 
-    public ConfigManager(final BattleBox plugin) {
+    public ConfigManager(BattleBox plugin) {
         this.plugin = plugin;
-        this.plugin.saveDefaultConfig();
-        this.config = this.plugin.getConfig();
+        setupConfig();
+    }
+
+    private void setupConfig() {
+        if (!plugin.getDataFolder().exists()) {
+            plugin.getDataFolder().mkdir();
+        }
+
+        configFile = new File(plugin.getDataFolder(), "config.yml");
+
+        if (!configFile.exists()) {
+            plugin.saveResource("config.yml", false);
+        }
+
+        config = YamlConfiguration.loadConfiguration(configFile);
+    }
+
+    public void saveConfig() {
+        try {
+            config.save(configFile);
+        } catch (IOException e) {
+            plugin.getLogger().severe("Could not save config to " + configFile);
+        }
     }
 
     public void reloadConfig() {
-        this.plugin.reloadConfig();
-    }
-
-    public int getRoundDuration() {
-        return this.config.getInt("settings.round-duration", 180);
-    }
-
-    public int getMinPlayersPerTeam() {
-        return this.config.getInt("settings.min-players-per-team", 1);
-    }
-
-    public int getMaxPlayersPerTeam() {
-        return this.config.getInt("settings.max-players-per-team", 4);
-    }
-
-    public int getCountdownDuration() {
-        return this.config.getInt("settings.countdown-duration", 30);
-    }
-
-    public int getKillPoints() {
-        return this.config.getInt("settings.points.kill", 50);
-    }
-
-    public int getWinPoints() {
-        return this.config.getInt("settings.points.win", 100);
-    }
-
-    public int getParticipationPoints() {
-        return this.config.getInt("settings.points.participation", 10);
+        config = YamlConfiguration.loadConfiguration(configFile);
     }
 }

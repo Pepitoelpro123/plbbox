@@ -1,50 +1,42 @@
 package com.yourname.battlebox;
 
-import com.yourname.battlebox.config.ConfigManager;
-import com.yourname.battlebox.game.GameManager;
 import com.yourname.battlebox.arena.ArenaManager;
-import com.yourname.battlebox.team.TeamManager;
-import com.yourname.battlebox.listeners.GameListener;
+import com.yourname.battlebox.config.ConfigManager;
 import lombok.Getter;
 import org.bukkit.plugin.java.JavaPlugin;
 
-@Getter
-public final class BattleBox extends JavaPlugin {
+public class BattleBox extends JavaPlugin {
     
+    @Getter
     private static BattleBox instance;
+    
+    @Getter
     private ConfigManager configManager;
-    private GameManager gameManager;
+    
+    @Getter
     private ArenaManager arenaManager;
-    private TeamManager teamManager;
 
     @Override
     public void onEnable() {
         instance = this;
-        this.loadManagers();
-        this.registerListeners();
-        this.getLogger().info("BattleBox has been enabled!");
+        
+        // Initialize managers
+        this.configManager = new ConfigManager(this);
+        this.arenaManager = new ArenaManager(this);
+        
+        // Load configuration
+        this.saveDefaultConfig();
+        
+        getLogger().info("BattleBox plugin has been enabled!");
     }
 
     @Override
     public void onDisable() {
-        if (this.gameManager != null) {
-            this.gameManager.shutdown();
+        // Save all arena data
+        if (this.arenaManager != null) {
+            this.arenaManager.saveArenas();
         }
-        this.getLogger().info("BattleBox has been disabled!");
-    }
-
-    public static BattleBox getInstance() {
-        return instance;
-    }
-
-    private void loadManagers() {
-        this.configManager = new ConfigManager(this);
-        this.arenaManager = new ArenaManager(this);
-        this.teamManager = new TeamManager(this);
-        this.gameManager = new GameManager(this);
-    }
-
-    private void registerListeners() {
-        this.getServer().getPluginManager().registerEvents(new GameListener(this), this);
+        
+        getLogger().info("BattleBox plugin has been disabled!");
     }
 }
