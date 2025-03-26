@@ -1,38 +1,54 @@
 package com.yourname.battlebox.listeners;
 
 import com.yourname.battlebox.BattleBox;
-import com.yourname.battlebox.events.GameEndEvent;
-import com.yourname.battlebox.events.GameStartEvent;
-import com.yourname.battlebox.events.PlayerJoinGameEvent;
-import com.yourname.battlebox.events.PlayerLeaveGameEvent;
+import com.yourname.battlebox.game.GameManager;
+import com.yourname.battlebox.game.GameState;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 
-public final class GameListener implements Listener {
+public class GameListener implements Listener {
     
     private final BattleBox plugin;
+    private final GameManager gameManager;
     
-    public GameListener(final BattleBox plugin) {
+    public GameListener(BattleBox plugin) {
         this.plugin = plugin;
+        this.gameManager = plugin.getGameManager();
+        plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
     
     @EventHandler
-    public void onGameStart(final GameStartEvent event) {
-        // Implementation coming in game mechanics phase
+    public void onBlockPlace(BlockPlaceEvent event) {
+        if (gameManager.getGameState() != GameState.IN_GAME) return;
+        
+        Player player = event.getPlayer();
+        Material blockType = event.getBlock().getType();
+        
+        // Check if the placed block is wool
+        if (blockType == Material.WHITE_WOOL || 
+            blockType == Material.RED_WOOL || 
+            blockType == Material.BLUE_WOOL) {
+            gameManager.handleWoolPlacement(player, event.getBlock().getLocation());
+        }
     }
     
     @EventHandler
-    public void onGameEnd(final GameEndEvent event) {
-        // Implementation coming in game mechanics phase
-    }
-    
-    @EventHandler
-    public void onPlayerJoinGame(final PlayerJoinGameEvent event) {
-        // Implementation coming in game mechanics phase
-    }
-    
-    @EventHandler
-    public void onPlayerLeaveGame(final PlayerLeaveGameEvent event) {
-        // Implementation coming in game mechanics phase
+    public void onPlayerDeath(PlayerDeathEvent event) {
+        if (gameManager.getGameState() != GameState.IN_GAME) return;
+        
+        Player victim = event.getEntity();
+        Player killer = victim.getKiller();
+        
+        // Award points to killer if it was a player kill
+        if (killer != null) {
+            plugin.getPointSystem().awardKillPoints(killer);
+        }
+        
+        // Check win conditions after death
+        gameManager.checkWinConditions();
     }
 }
