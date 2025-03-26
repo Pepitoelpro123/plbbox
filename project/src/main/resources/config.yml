@@ -1,0 +1,56 @@
+settings:
+  round-duration: 180
+  min-players-per-team: 1
+  max-players-per-team: 4
+  countdown-duration: 30
+  points:
+    kill: 50
+    win: 100
+    participation: 10
+
+arena:
+  default-block: WOOL
+  center-size: 3
+  build-height: 5
+
+teams:
+  red:
+    name: "Red Team"
+    color: RED
+    wool-color: RED
+  blue:
+    name: "Blue Team"
+    color: BLUE
+    wool-color: BLUE
+
+kits:
+  default:
+    armor:
+      helmet: IRON_HELMET
+      chestplate: IRON_CHESTPLATE
+      leggings: IRON_LEGGINGS
+      boots: IRON_BOOTS
+    items:
+      - material: IRON_SWORD
+        slot: 0
+      - material: BOW
+        slot: 1
+      - material: WOODEN_AXE
+        slot: 2
+      - material: ARROW
+        slot: 8
+        amount: 8
+
+messages:
+  prefix: "&8[&6BattleBox&8] "
+  game:
+    start: "&aGame starting in %time% seconds!"
+    started: "&aThe game has started!"
+    ended: "&eGame Over! %winner% wins!"
+    tie: "&eGame Over! It's a tie!"
+  team:
+    joined: "&aYou joined %team%!"
+    full: "&cThis team is full!"
+  arena:
+    created: "&aArena %name% has been created!"
+    deleted: "&cArena %name% has been deleted!"
