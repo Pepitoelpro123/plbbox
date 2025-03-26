@@ -1,0 +1,67 @@
+# BattleBox Configuration
+
+# Game Settings
+game:
+  round-time: 180 # Time in seconds (3 minutes)
+  min-players-per-team: 1
+  max-players-per-team: 4
+  countdown-time: 30 # Time in seconds before game starts
+
+# Arena Settings
+arenas:
+  default:
+    name: "Default Arena"
+    world: "world"
+    enabled: true
+    bounds:
+      min: {x: 0, y: 0, z: 0}
+      max: {x: 0, y: 0, z: 0}
+    wool-center:
+      location: {x: 0, y: 0, z: 0}
+      radius: 3
+    spawns:
+      red-team: {x: 0, y: 0, z: 0, yaw: 0, pitch: 0}
+      blue-team: {x: 0, y: 0, z: 0, yaw: 0, pitch: 0}
+
+# Team Settings
+teams:
+  red:
+    name: "Red Team"
+    color: RED
+    prefix: "&c"
+  blue:
+    name: "Blue Team"
+    color: BLUE
+    prefix: "&9"
+
+# Kit Settings
+kits:
+  default:
+    name: "Default Kit"
+    items:
+      - material: IRON_SWORD
+        slot: 0
+      - material: BOW
+        slot: 1
+      - material: IRON_AXE
+        slot: 2
+      - material: WHITE_WOOL
+        slot: 3
+        amount: 64
+      - material: ARROW
+        slot: 8
+        amount: 32
+    armor:
+      helmet: IRON_HELMET
+      chestplate: IRON_CHESTPLATE
+      leggings: IRON_LEGGINGS
+      boots: IRON_BOOTS
+
+# Messages
+messages:
+  prefix: "&8[&bBattleBox&8] &7"
+  game-start: "&aThe game has started!"
+  game-end: "&eThe game has ended!"
+  team-win: "&6{team} &ehas won the round!"
+  round-start: "&aRound {round} is starting!"
+  round-end: "&eRound {round} has ended!"
